@@ -1,3 +1,12 @@
+// Registrasi Service Worker untuk Mode Offline & PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Aplikasi siap digunakan offline!'))
+      .catch(err => console.error('Registrasi Service Worker gagal:', err));
+  });
+}
+
 // ================= 1. DATA AWAL (DEFAULT PRODUK) =================
 const DEFAULT_PRODUCTS = [
   { id: '1', name: 'Dimsum ori 3pcs', category: 'Makanan', price: 10000, hpp: 6000 },
