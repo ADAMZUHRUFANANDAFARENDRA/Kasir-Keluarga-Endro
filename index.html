@@ -102,6 +102,7 @@
     <!-- ================= TAB 2: KELOLA MENU ================= -->
     <section id="tabMenu" class="tab-content">
       <div class="admin-grid">
+        <!-- Form Tambah/Edit Menu -->
         <div class="card">
           <h3 id="menuFormTitle">➕ Tambah Menu Baru</h3>
           <form id="menuForm">
@@ -135,6 +136,7 @@
           </form>
         </div>
 
+        <!-- Tabel Daftar Menu -->
         <div class="card">
           <h3>📋 Daftar Semua Menu</h3>
           <div class="table-responsive">
@@ -260,7 +262,7 @@
           </div>
           
           <div class="quick-cash-btns" id="quickCashContainer">
-            <!-- Tombol pecahan cepat dibuat otomatis via JS -->
+            <!-- Tombol pecahan cepat dibuat via JS -->
           </div>
 
           <div class="change-box">
@@ -269,33 +271,26 @@
           </div>
         </div>
 
-        <!-- Bagian Pembayaran QRIS (Poster Resmi Dapur efia) -->
+        <!-- Bagian Pembayaran QRIS (Foto Poster Asli Dapur efia) -->
         <div id="qrisPaymentSection" class="payment-section" style="display:none;">
-          <div class="qris-card-container">
-            <div class="qris-card-header">
-              <span class="qris-brand-title">QRIS</span>
-              <span class="qris-gpn-tag">GPN</span>
+          <div class="qris-display-wrapper">
+            <!-- Memanggil langsung file poster asli QRIS dari folder image/qris.jpeg -->
+            <img src="image/qris.jpeg" 
+                 alt="QRIS Asli Dapur efia" 
+                 class="qris-real-poster">
+
+            <div class="qris-nominal-banner">
+              <span>Nominal yang Harus Ditransfer:</span>
+              <h3 id="qrisNominal">Rp 0</h3>
             </div>
             
-            <div class="qris-card-body">
-              <h4 class="merchant-name">Dapur efia</h4>
-              <p class="merchant-nmid">NMID : ID1026575543073</p>
-              <p class="merchant-code">A01</p>
-
-              <div class="qris-qr-box">
-                <!-- QR Image dengan multi-fallback -->
-                <img id="qrisImage" 
-                     src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020101021126570011ID.GO.GOPAY.WWW01189360091510265755430730215ID10265755430730303A015204581253033605802ID5910Dapur+efia6009SURABAYA61056023462070703A016304" 
-                     alt="QR Code QRIS Dapur efia">
-              </div>
-
-              <p class="qris-slogan">SATU QRIS UNTUK SEMUA</p>
-              <p class="qris-nominal-box">Nominal: <b id="qrisNominal">Rp 0</b></p>
-            </div>
+            <p class="qris-merchant-info">
+              <b>Dapur efia</b> &bull; NMID: ID1026575543073
+            </p>
+            <small class="text-muted" style="display:block; margin-top:0.6rem; text-align:center;">
+              ⚠️ Pastikan pelanggan telah memindai barcode di atas dan menunjukkan bukti transfer sebelum menekan tombol selesai.
+            </small>
           </div>
-          <small class="text-muted" style="display:block; text-align:center; margin-top:0.6rem;">
-            ⚠️ Pastikan pembeli telah selesai scan & konfirmasi bukti transfer sebelum menekan selesai.
-          </small>
         </div>
       </div>
 

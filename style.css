@@ -132,7 +132,7 @@ body {
   border-radius: 10px;
 }
 
-/* Navigation Tabs */
+/* Navigasi Tab */
 .main-nav {
   display: flex;
   background: #ffffff;
@@ -162,7 +162,7 @@ body {
   background: #eff6ff;
 }
 
-/* Containers */
+/* Container */
 .app-container {
   padding: 1.5rem;
   flex: 1;
@@ -222,7 +222,7 @@ body {
   border-color: var(--primary);
 }
 
-/* Product Cards */
+/* Kartu Produk */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -273,7 +273,7 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Cart Panel */
+/* Panel Keranjang */
 .cart-card {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -633,87 +633,48 @@ input:focus, select:focus {
   color: #166534;
 }
 
-/* Kartu QRIS Resmi */
-.qris-card-container {
-  background: #ffffff;
-  border: 2px solid #e2e8f0;
+/* Tampilan Poster Asli QRIS Dapur efia */
+.qris-display-wrapper {
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.qris-real-poster {
+  width: 100%;
+  max-width: 270px;
+  height: auto;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border);
+  display: block;
+  margin: 0 auto;
+}
+
+.qris-nominal-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 0.85rem;
   text-align: center;
 }
 
-.qris-card-header {
-  background: #dc2626;
-  color: white;
-  padding: 0.5rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-}
-
-.qris-brand-title {
-  font-size: 1.2rem;
-  letter-spacing: 1px;
-}
-
-.qris-gpn-tag {
-  background: white;
-  color: #dc2626;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-}
-
-.qris-card-body {
-  padding: 1rem;
-}
-
-.merchant-name {
-  font-size: 1.2rem;
-  color: #0f172a;
-  margin-bottom: 0.2rem;
-}
-
-.merchant-nmid {
-  font-size: 0.8rem;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.merchant-code {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-bottom: 0.5rem;
-}
-
-.qris-qr-box {
-  background: white;
-  display: inline-block;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  margin: 0.5rem 0;
-}
-
-.qris-qr-box img {
-  width: 180px;
-  height: 180px;
+.qris-nominal-banner span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
   display: block;
 }
 
-.qris-slogan {
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #475569;
-  letter-spacing: 0.5px;
+.qris-nominal-banner h3 {
+  color: var(--primary);
+  font-size: 1.4rem;
+  margin-top: 0.2rem;
 }
 
-.qris-nominal-box {
+.qris-merchant-info {
+  font-size: 0.85rem;
+  color: var(--text-dark);
   margin-top: 0.5rem;
-  font-size: 1rem;
-  color: #1e293b;
 }
 
 /* Struk */

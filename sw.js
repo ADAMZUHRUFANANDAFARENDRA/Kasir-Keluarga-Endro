@@ -1,10 +1,11 @@
-const CACHE_NAME = "kasir-keluarga-v5";
+const CACHE_NAME = "kasir-keluarga-v8";
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
-  "./manifest.json"
+  "./manifest.json",
+  "./image/qris.jpeg"
 ];
 
 // Install Event
@@ -16,7 +17,7 @@ self.addEventListener("install", event => {
         try {
           await cache.add(url);
         } catch (err) {
-          console.warn("Lewati file opsional:", url);
+          console.warn("Lewati cache opsional:", url);
         }
       }
     })
