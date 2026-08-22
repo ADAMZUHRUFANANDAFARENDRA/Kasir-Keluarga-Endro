@@ -67,7 +67,7 @@
             </div>
           </div>
           <div class="product-grid" id="productGrid">
-            <!-- Render via JS -->
+            <!-- Render Produk dengan Gambar via JS -->
           </div>
         </div>
 
@@ -107,10 +107,12 @@
           <h3 id="menuFormTitle">➕ Tambah Menu Baru</h3>
           <form id="menuForm">
             <input type="hidden" id="menuId">
+            
             <div class="form-group">
               <label for="menuName">Nama Produk / Menu</label>
               <input type="text" id="menuName" placeholder="Contoh: Dimsum Mentai 3pcs" required>
             </div>
+
             <div class="form-group">
               <label for="menuCategory">Kategori</label>
               <select id="menuCategory" required>
@@ -119,6 +121,7 @@
                 <option value="Lainnya">Lainnya</option>
               </select>
             </div>
+
             <div class="form-row">
               <div class="form-group">
                 <label for="menuPrice">Harga Jual (Rp)</label>
@@ -129,6 +132,21 @@
                 <input type="number" id="menuHpp" placeholder="6000" min="0" required>
               </div>
             </div>
+
+            <!-- Bagian Upload Gambar Produk -->
+            <div class="form-group">
+              <label>Foto / Gambar Produk</label>
+              <input type="file" id="menuImageFile" accept="image/*" class="file-input">
+              <div class="image-or-divider"><span>atau masukkan URL gambar:</span></div>
+              <input type="url" id="menuImageUrl" placeholder="https://contoh-gambar.com/foto.jpg">
+              
+              <!-- Pratinjau Gambar -->
+              <div class="image-preview-wrapper" id="menuImagePreviewWrapper">
+                <img id="menuImagePreview" src="" alt="Pratinjau Foto" style="display:none;">
+                <span id="menuImagePlaceholder" class="text-muted">Pratinjau Foto Produk</span>
+              </div>
+            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn-primary" id="btnSaveMenu">Simpan Menu</button>
               <button type="button" class="btn-secondary" id="btnCancelEdit" style="display:none;">Batal</button>
@@ -143,6 +161,7 @@
             <table class="data-table">
               <thead>
                 <tr>
+                  <th>Foto</th>
                   <th>Nama Menu</th>
                   <th>Kategori</th>
                   <th>Harga Jual</th>
@@ -177,18 +196,25 @@
       </div>
 
       <div class="card" style="margin-top: 1.5rem;">
-        <h3>📊 Analisis Margin Keuntungan per Produk</h3>
-        <p class="text-muted">Perhitungan potensi keuntungan berdasarkan selisih harga jual dan modal HPP produk.</p>
+        <div class="card-header-flex">
+          <div>
+            <h3>📊 Analisis Margin Keuntungan & Penyesuaian HPP</h3>
+            <p class="text-muted">Klik tombol "✏️ Sesuaikan" untuk mengubah modal HPP atau harga jual langsung dari sini.</p>
+          </div>
+        </div>
+        
         <div class="table-responsive">
           <table class="data-table">
             <thead>
               <tr>
+                <th>Foto</th>
                 <th>Produk</th>
                 <th>Harga Jual</th>
                 <th>HPP (Modal)</th>
                 <th>Keuntungan/Porsi</th>
-                <th>Margin Profit (%)</th>
+                <th>Margin (%)</th>
                 <th>Status</th>
+                <th>Aksi Cepat</th>
               </tr>
             </thead>
             <tbody id="hppTableBody">
@@ -228,6 +254,36 @@
     </section>
   </main>
 
+  <!-- ================= MODAL PENYESUAIAN CEPAT HPP ================= -->
+  <div id="quickHppModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>✏️ Sesuaikan HPP & Harga</h3>
+        <button class="btn-close" id="btnCloseQuickHpp">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="quickHppId">
+        <p id="quickHppProductName" style="font-weight:bold; font-size:1.1rem; color:var(--primary); margin-bottom:1rem;"></p>
+        
+        <div class="form-group">
+          <label for="quickPrice">Harga Jual Baru (Rp)</label>
+          <input type="number" id="quickPrice" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="quickHpp">HPP / Modal Baru (Rp)</label>
+          <input type="number" id="quickHpp" min="0" required>
+        </div>
+        <div class="change-box" style="margin-top:1rem; font-size:0.95rem;">
+          <span>Proyeksi Laba/Porsi:</span>
+          <b id="quickProfitCalc">Rp 0</b>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnSaveQuickHpp" class="btn-primary-block">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL PEMBAYARAN KASIR ================= -->
   <div id="paymentModal" class="modal">
     <div class="modal-content">
@@ -262,7 +318,7 @@
           </div>
           
           <div class="quick-cash-btns" id="quickCashContainer">
-            <!-- Tombol pecahan cepat dibuat via JS -->
+            <!-- Tombol pecahan via JS -->
           </div>
 
           <div class="change-box">
@@ -274,7 +330,6 @@
         <!-- Bagian Pembayaran QRIS (Foto Poster Asli Dapur efia) -->
         <div id="qrisPaymentSection" class="payment-section" style="display:none;">
           <div class="qris-display-wrapper">
-            <!-- Memanggil langsung file poster asli QRIS dari folder image/qris.jpeg -->
             <img src="image/qris.jpeg" 
                  alt="QRIS Asli Dapur efia" 
                  class="qris-real-poster">

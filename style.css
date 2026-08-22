@@ -116,9 +116,7 @@ body {
   transition: 0.2s;
 }
 
-.icon-btn:hover {
-  background: #475569;
-}
+.icon-btn:hover { background: #475569; }
 
 .badge {
   position: absolute;
@@ -152,9 +150,7 @@ body {
   transition: 0.2s;
 }
 
-.nav-tab:hover {
-  color: var(--primary);
-}
+.nav-tab:hover { color: var(--primary); }
 
 .nav-tab.active {
   color: var(--primary);
@@ -162,7 +158,7 @@ body {
   background: #eff6ff;
 }
 
-/* Container */
+/* Containers */
 .app-container {
   padding: 1.5rem;
   flex: 1;
@@ -171,15 +167,10 @@ body {
   width: 100%;
 }
 
-.tab-content {
-  display: none;
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-.tab-content.active {
-  display: block;
-}
-
-/* POS Layout */
+/* POS Grid & Products */
 .pos-layout {
   display: grid;
   grid-template-columns: 1fr 380px;
@@ -187,9 +178,7 @@ body {
 }
 
 @media (max-width: 992px) {
-  .pos-layout {
-    grid-template-columns: 1fr;
-  }
+  .pos-layout { grid-template-columns: 1fr; }
 }
 
 .section-header {
@@ -222,55 +211,78 @@ body {
   border-color: var(--primary);
 }
 
-/* Kartu Produk */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 1rem;
 }
 
+/* Kartu Produk dengan Gambar */
 .product-card {
   background: var(--bg-card);
   border-radius: var(--radius);
-  padding: 1rem;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
 }
 
 .product-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.12);
   border-color: var(--primary);
 }
 
-.product-tag {
+.product-img-box {
+  position: relative;
+  width: 100%;
+  height: 130px;
+  background: #e2e8f0;
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-tag-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
   font-size: 0.75rem;
   font-weight: bold;
-  color: var(--primary);
-  background: #dbeafe;
+  color: #ffffff;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(4px);
   padding: 2px 8px;
   border-radius: 6px;
-  align-self: flex-start;
-  margin-bottom: 0.5rem;
+}
+
+.product-card-body {
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
 }
 
 .product-name {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: var(--text-dark);
+  line-height: 1.3;
 }
 
 .product-price {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--success);
-  margin-top: 0.5rem;
 }
 
 /* Panel Keranjang */
@@ -314,19 +326,9 @@ body {
   border-bottom: 1px dashed var(--border);
 }
 
-.cart-item-info {
-  flex: 1;
-}
-
-.cart-item-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.cart-item-price {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
+.cart-item-info { flex: 1; }
+.cart-item-name { font-weight: 600; font-size: 0.95rem; }
+.cart-item-price { font-size: 0.85rem; color: var(--text-muted); }
 
 .cart-item-controls {
   display: flex;
@@ -384,14 +386,12 @@ body {
 
 .admin-grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 380px 1fr;
   gap: 1.5rem;
 }
 
 @media (max-width: 900px) {
-  .admin-grid {
-    grid-template-columns: 1fr;
-  }
+  .admin-grid { grid-template-columns: 1fr; }
 }
 
 .dashboard-grid {
@@ -438,12 +438,54 @@ body {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
+  vertical-align: middle;
 }
 
 .data-table th {
   background: #f8fafc;
   color: var(--text-muted);
   font-weight: 600;
+}
+
+/* Thumbnail di Tabel */
+.table-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+/* Upload Preview */
+.file-input {
+  padding: 0.4rem 0;
+  border: none;
+}
+
+.image-or-divider {
+  text-align: center;
+  margin: 0.4rem 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.image-preview-wrapper {
+  margin-top: 0.5rem;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.image-preview-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Forms */
@@ -490,9 +532,7 @@ input:focus, select:focus {
   font-size: 1rem;
 }
 
-.btn-primary:hover, .btn-primary-block:hover {
-  background: var(--primary-hover);
-}
+.btn-primary:hover, .btn-primary-block:hover { background: var(--primary-hover); }
 
 .btn-secondary {
   background: #64748b;
@@ -522,6 +562,22 @@ input:focus, select:focus {
   font-size: 0.85rem;
 }
 
+.btn-edit-quick {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: var(--primary);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-edit-quick:hover {
+  background: var(--primary);
+  color: white;
+}
+
 /* Modal */
 .modal {
   display: none;
@@ -537,9 +593,7 @@ input:focus, select:focus {
   padding: 1rem;
 }
 
-.modal.show {
-  display: flex;
-}
+.modal.show { display: flex; }
 
 .modal-content {
   background: white;
@@ -576,15 +630,8 @@ input:focus, select:focus {
   margin-bottom: 1.25rem;
 }
 
-.payment-total-box .lbl {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.payment-total-box h2 {
-  color: var(--primary);
-  font-size: 1.8rem;
-}
+.payment-total-box .lbl { font-size: 0.85rem; color: var(--text-muted); }
+.payment-total-box h2 { color: var(--primary); font-size: 1.8rem; }
 
 .payment-methods {
   display: grid;
@@ -633,7 +680,7 @@ input:focus, select:focus {
   color: #166534;
 }
 
-/* Tampilan Poster Asli QRIS Dapur efia */
+/* Poster QRIS */
 .qris-display-wrapper {
   text-align: center;
   padding: 0.5rem 0;

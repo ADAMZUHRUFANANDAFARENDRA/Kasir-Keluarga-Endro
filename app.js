@@ -7,16 +7,72 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ================= DATA AWAL =================
+// ================= DATA AWAL & FOTO DEFAULT =================
 const DEFAULT_PRODUCTS = [
-  { id: '1', name: 'Dimsum ori 3pcs', category: 'Makanan', price: 10000, hpp: 6000 },
-  { id: '2', name: 'Dimsum mentai 3pcs', category: 'Makanan', price: 14000, hpp: 8500 },
-  { id: '3', name: 'Milo lava ukuran sedang', category: 'Minuman', price: 10000, hpp: 6000 },
-  { id: '4', name: 'Milo lava ukuran jumbo', category: 'Minuman', price: 15000, hpp: 9000 },
-  { id: '5', name: 'Good day lava ukuran sedang', category: 'Minuman', price: 10000, hpp: 6000 },
-  { id: '6', name: 'Good day lava cappucino', category: 'Minuman', price: 15000, hpp: 9000 },
-  { id: '7', name: 'Es teh dengan ukuran kecil', category: 'Minuman', price: 3000, hpp: 1500 },
-  { id: '8', name: 'Es teh dengan ukuran jumbo', category: 'Minuman', price: 5000, hpp: 2500 }
+  { 
+    id: '1', 
+    name: 'Dimsum ori 3pcs', 
+    category: 'Makanan', 
+    price: 10000, 
+    hpp: 6000,
+    image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '2', 
+    name: 'Dimsum mentai 3pcs', 
+    category: 'Makanan', 
+    price: 14000, 
+    hpp: 8500,
+    image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '3', 
+    name: 'Milo lava ukuran sedang', 
+    category: 'Minuman', 
+    price: 10000, 
+    hpp: 6000,
+    image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '4', 
+    name: 'Milo lava ukuran jumbo', 
+    category: 'Minuman', 
+    price: 15000, 
+    hpp: 9000,
+    image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '5', 
+    name: 'Good day lava ukuran sedang', 
+    category: 'Minuman', 
+    price: 10000, 
+    hpp: 6000,
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '6', 
+    name: 'Good day lava cappucino', 
+    category: 'Minuman', 
+    price: 15000, 
+    hpp: 9000,
+    image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '7', 
+    name: 'Es teh dengan ukuran kecil', 
+    category: 'Minuman', 
+    price: 3000, 
+    hpp: 1500,
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'
+  },
+  { 
+    id: '8', 
+    name: 'Es teh dengan ukuran jumbo', 
+    category: 'Minuman', 
+    price: 5000, 
+    hpp: 2500,
+    image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80'
+  }
 ];
 
 // State Aplikasi
@@ -26,13 +82,20 @@ let transactions = JSON.parse(localStorage.getItem('kasir_transactions')) || [];
 let notifications = JSON.parse(localStorage.getItem('kasir_notifications')) || [];
 let currentCategoryFilter = 'all';
 let currentCashier = localStorage.getItem('kasir_active_user') || 'Adam Zuhruf';
+let currentUploadedImageBase64 = '';
 
-// Helper format Rupiah & Tanggal
+// Helper Format
 const formatRupiah = (num) => 'Rp ' + Number(num || 0).toLocaleString('id-ID');
 const getFormattedDateTime = () => {
   const d = new Date();
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
          d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+};
+
+const getFallbackImage = (category) => {
+  return category === 'Makanan'
+    ? 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=400&q=80'
+    : 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80';
 };
 
 function saveState() {
@@ -79,7 +142,7 @@ function renderNotifications() {
   `).join('');
 }
 
-// ================= KASIR (POS) & PRODUK =================
+// ================= KASIR (POS) DENGAN GAMBAR =================
 function renderProducts() {
   const grid = document.getElementById('productGrid');
   const filtered = currentCategoryFilter === 'all' 
@@ -91,13 +154,21 @@ function renderProducts() {
     return;
   }
 
-  grid.innerHTML = filtered.map(p => `
-    <div class="product-card" onclick="addToCart('${p.id}')">
-      <span class="product-tag">${p.category}</span>
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">${formatRupiah(p.price)}</div>
-    </div>
-  `).join('');
+  grid.innerHTML = filtered.map(p => {
+    const imgSrc = p.image || getFallbackImage(p.category);
+    return `
+      <div class="product-card" onclick="addToCart('${p.id}')">
+        <div class="product-img-box">
+          <img src="${imgSrc}" alt="${p.name}" class="product-img" onerror="this.src='${getFallbackImage(p.category)}'">
+          <span class="product-tag-overlay">${p.category}</span>
+        </div>
+        <div class="product-card-body">
+          <div class="product-name">${p.name}</div>
+          <div class="product-price">${formatRupiah(p.price)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function addToCart(productId) {
@@ -164,59 +235,68 @@ function renderCart() {
   btnCheckout.disabled = false;
 }
 
-// ================= KELOLA MENU & HPP =================
+// ================= KELOLA MENU & GAMBAR =================
 function renderMenuTable() {
   const tbody = document.getElementById('menuTableBody');
-  tbody.innerHTML = products.map(p => `
-    <tr>
-      <td><b>${p.name}</b></td>
-      <td>${p.category}</td>
-      <td>${formatRupiah(p.price)}</td>
-      <td>${formatRupiah(p.hpp)}</td>
-      <td>
-        <button class="btn-chip" onclick="editMenu('${p.id}')">✏️ Edit</button>
-        <button class="btn-chip" style="color:var(--danger);" onclick="deleteMenu('${p.id}')">🗑️ Hapus</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function renderHppAnalysis() {
-  const tbody = document.getElementById('hppTableBody');
   tbody.innerHTML = products.map(p => {
-    const profit = p.price - p.hpp;
-    const margin = p.price > 0 ? ((profit / p.price) * 100).toFixed(1) : 0;
-    const isProfit = profit >= 0;
-
+    const imgSrc = p.image || getFallbackImage(p.category);
     return `
       <tr>
+        <td>
+          <img src="${imgSrc}" alt="${p.name}" class="table-thumb" onerror="this.src='${getFallbackImage(p.category)}'">
+        </td>
         <td><b>${p.name}</b></td>
+        <td><span class="product-tag">${p.category}</span></td>
         <td>${formatRupiah(p.price)}</td>
         <td>${formatRupiah(p.hpp)}</td>
-        <td style="color:${isProfit ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">
-          ${formatRupiah(profit)}
-        </td>
-        <td><b>${margin}%</b></td>
         <td>
-          <span style="padding:3px 8px; border-radius:4px; font-size:0.75rem; background:${isProfit ? '#dcfce7' : '#fee2e2'}; color:${isProfit ? '#166534' : '#991b1b'};">
-            ${isProfit ? 'Untung' : 'Rugi'}
-          </span>
+          <button class="btn-chip" onclick="editMenu('${p.id}')">✏️ Edit</button>
+          <button class="btn-chip" style="color:var(--danger);" onclick="deleteMenu('${p.id}')">🗑️ Hapus</button>
         </td>
       </tr>
     `;
   }).join('');
+}
 
-  let totalRevenue = 0;
-  let totalHpp = 0;
-  transactions.forEach(t => {
-    totalRevenue += t.total;
-    totalHpp += (t.totalHpp || 0);
-  });
+// Upload & Preview Foto Produk
+document.getElementById('menuImageFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      currentUploadedImageBase64 = evt.target.result;
+      showImagePreview(currentUploadedImageBase64);
+      document.getElementById('menuImageUrl').value = '';
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
-  const totalProfit = totalRevenue - totalHpp;
-  document.getElementById('statTotalRevenue').innerText = formatRupiah(totalRevenue);
-  document.getElementById('statTotalHpp').innerText = formatRupiah(totalHpp);
-  document.getElementById('statTotalProfit').innerText = formatRupiah(totalProfit);
+document.getElementById('menuImageUrl').addEventListener('input', function(e) {
+  const url = e.target.value.trim();
+  if (url) {
+    currentUploadedImageBase64 = '';
+    showImagePreview(url);
+  } else {
+    resetImagePreview();
+  }
+});
+
+function showImagePreview(src) {
+  const img = document.getElementById('menuImagePreview');
+  const placeholder = document.getElementById('menuImagePlaceholder');
+  img.src = src;
+  img.style.display = 'block';
+  placeholder.style.display = 'none';
+}
+
+function resetImagePreview() {
+  const img = document.getElementById('menuImagePreview');
+  const placeholder = document.getElementById('menuImagePlaceholder');
+  img.src = '';
+  img.style.display = 'none';
+  placeholder.style.display = 'block';
+  currentUploadedImageBase64 = '';
 }
 
 function handleSaveMenu(e) {
@@ -226,15 +306,18 @@ function handleSaveMenu(e) {
   const category = document.getElementById('menuCategory').value;
   const price = parseInt(document.getElementById('menuPrice').value) || 0;
   const hpp = parseInt(document.getElementById('menuHpp').value) || 0;
+  
+  const urlInput = document.getElementById('menuImageUrl').value.trim();
+  const finalImage = currentUploadedImageBase64 || urlInput || getFallbackImage(category);
 
   if (id) {
     const idx = products.findIndex(p => p.id === id);
     if (idx !== -1) {
-      products[idx] = { id, name, category, price, hpp };
+      products[idx] = { id, name, category, price, hpp, image: finalImage || products[idx].image };
       addNotification(`[${currentCashier}] memperbarui menu: ${name}`);
     }
   } else {
-    products.push({ id: Date.now().toString(), name, category, price, hpp });
+    products.push({ id: Date.now().toString(), name, category, price, hpp, image: finalImage });
     addNotification(`[${currentCashier}] menambah menu baru: ${name}`);
   }
 
@@ -254,6 +337,15 @@ function editMenu(id) {
   document.getElementById('menuCategory').value = p.category;
   document.getElementById('menuPrice').value = p.price;
   document.getElementById('menuHpp').value = p.hpp;
+
+  if (p.image) {
+    showImagePreview(p.image);
+    if (p.image.startsWith('http')) {
+      document.getElementById('menuImageUrl').value = p.image;
+    }
+  } else {
+    resetImagePreview();
+  }
 
   document.getElementById('menuFormTitle').innerText = '✏️ Edit Menu';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
@@ -279,7 +371,104 @@ function resetMenuForm() {
   document.getElementById('menuId').value = '';
   document.getElementById('menuFormTitle').innerText = '➕ Tambah Menu Baru';
   document.getElementById('btnCancelEdit').style.display = 'none';
+  resetImagePreview();
 }
+
+// ================= HITUNG HPP & EDIT PENYESUAIAN =================
+function renderHppAnalysis() {
+  const tbody = document.getElementById('hppTableBody');
+  tbody.innerHTML = products.map(p => {
+    const profit = p.price - p.hpp;
+    const margin = p.price > 0 ? ((profit / p.price) * 100).toFixed(1) : 0;
+    const isProfit = profit >= 0;
+    const imgSrc = p.image || getFallbackImage(p.category);
+
+    return `
+      <tr>
+        <td>
+          <img src="${imgSrc}" alt="${p.name}" class="table-thumb" onerror="this.src='${getFallbackImage(p.category)}'">
+        </td>
+        <td><b>${p.name}</b></td>
+        <td>${formatRupiah(p.price)}</td>
+        <td>${formatRupiah(p.hpp)}</td>
+        <td style="color:${isProfit ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">
+          ${formatRupiah(profit)}
+        </td>
+        <td><b>${margin}%</b></td>
+        <td>
+          <span style="padding:3px 8px; border-radius:4px; font-size:0.75rem; background:${isProfit ? '#dcfce7' : '#fee2e2'}; color:${isProfit ? '#166534' : '#991b1b'};">
+            ${isProfit ? 'Untung' : 'Rugi'}
+          </span>
+        </td>
+        <td>
+          <button class="btn-edit-quick" onclick="openQuickHppModal('${p.id}')">✏️ Sesuaikan</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  let totalRevenue = 0;
+  let totalHpp = 0;
+  transactions.forEach(t => {
+    totalRevenue += t.total;
+    totalHpp += (t.totalHpp || 0);
+  });
+
+  const totalProfit = totalRevenue - totalHpp;
+  document.getElementById('statTotalRevenue').innerText = formatRupiah(totalRevenue);
+  document.getElementById('statTotalHpp').innerText = formatRupiah(totalHpp);
+  document.getElementById('statTotalProfit').innerText = formatRupiah(totalProfit);
+}
+
+// Quick Edit HPP & Harga
+function openQuickHppModal(productId) {
+  const p = products.find(item => item.id === productId);
+  if (!p) return;
+
+  document.getElementById('quickHppId').value = p.id;
+  document.getElementById('quickHppProductName').innerText = p.name;
+  document.getElementById('quickPrice').value = p.price;
+  document.getElementById('quickHpp').value = p.hpp;
+
+  calcQuickProfit();
+  document.getElementById('quickHppModal').classList.add('show');
+}
+
+function calcQuickProfit() {
+  const price = parseInt(document.getElementById('quickPrice').value) || 0;
+  const hpp = parseInt(document.getElementById('quickHpp').value) || 0;
+  const profit = price - hpp;
+  const el = document.getElementById('quickProfitCalc');
+  el.innerText = formatRupiah(profit);
+  el.style.color = profit >= 0 ? 'var(--success)' : 'var(--danger)';
+}
+
+document.getElementById('quickPrice').addEventListener('input', calcQuickProfit);
+document.getElementById('quickHpp').addEventListener('input', calcQuickProfit);
+
+document.getElementById('btnCloseQuickHpp').addEventListener('click', () => {
+  document.getElementById('quickHppModal').classList.remove('show');
+});
+
+document.getElementById('btnSaveQuickHpp').addEventListener('click', () => {
+  const id = document.getElementById('quickHppId').value;
+  const newPrice = parseInt(document.getElementById('quickPrice').value) || 0;
+  const newHpp = parseInt(document.getElementById('quickHpp').value) || 0;
+
+  const product = products.find(p => p.id === id);
+  if (product) {
+    product.price = newPrice;
+    product.hpp = newHpp;
+    saveState();
+
+    addNotification(`[${currentCashier}] menyesuaikan HPP ${product.name}: Modal ${formatRupiah(newHpp)}, Jual ${formatRupiah(newPrice)}`);
+    
+    document.getElementById('quickHppModal').classList.remove('show');
+    renderProducts();
+    renderMenuTable();
+    renderHppAnalysis();
+  }
+});
 
 // ================= PEMBAYARAN & STRUK =================
 function getCartTotal() {
@@ -366,7 +555,7 @@ function processPayment() {
   addNotification(`Transaksi ${transaction.invoiceNo} (${formatRupiah(total)}) oleh ${currentCashier}`);
 
   document.getElementById('paymentModal').classList.remove('show');
-  showReceipt(transaction);
+  showReceipt(trx = transaction);
 
   cart = [];
   renderCart();
@@ -424,7 +613,6 @@ function renderHistoryTable() {
 
 // ================= EVENT LISTENERS =================
 document.addEventListener('DOMContentLoaded', () => {
-  // Set Kasir Aktif
   const cashierDropdown = document.getElementById('selectCashier');
   cashierDropdown.value = currentCashier;
   cashierDropdown.addEventListener('change', (e) => {
