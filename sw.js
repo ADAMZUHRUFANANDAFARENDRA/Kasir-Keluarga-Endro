@@ -1,22 +1,20 @@
-const CACHE_NAME = "kasir-dimsum-v1";
+const CACHE_NAME = "kasir-keluarga-v2";
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/style.css",
-  "/app.js",
-  "/manifest.json"
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json"
 ];
 
-// Proses Install: Menyimpan file ke Cache Handphone
+// Install Event
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Proses Fetch: Jika offline, ambil data dari Cache
+// Fetch Event (Offline support)
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {

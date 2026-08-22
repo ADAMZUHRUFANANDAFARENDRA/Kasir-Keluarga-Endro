@@ -1,53 +1,330 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir Keluarga Endro</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasir Keluarga Endro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Kasir Keluarga Endro</h1>
-            <div class="operator-select">
-                <label for="kasir">Kasir on Duty:</label>
-                <select id="kasir">
-                    <option value="Endro Trimaryono">Endro Trimaryono</option>
-                    <option value="Fajarwati Rochmah">Fajarwati Rochmah</option>
-                    <option value="Adam Zuhruf Ananda Farendra">Adam Zuhruf Ananda Farendra</option>
-                    <option value="Muhammad Ihsan Farendra">Muhammad Ihsan Farendra</option>
-                    <option value="Mbah Sukarti">Mbah Sukarti</option>
-                </select>
-            </div>
-        </header>
-
-        <main>
-            <div id="product-list" class="grid-container">
-                <!-- Daftar produk akan dirender lewat JavaScript -->
-            </div>
-        </main>
-
-        <footer>
-            <div class="summary">
-                <div class="summary-item">
-                    <span>Total Omset (Kotor):</span>
-                    <strong id="total-sales">Rp 0</strong>
-                </div>
-                <div class="summary-item">
-                    <span>Total HPP (Modal Terpakai):</span>
-                    <strong id="total-hpp" style="color: #e67e22;">Rp 0</strong>
-                </div>
-                <div class="summary-item highlight">
-                    <span>Keuntungan Bersih (Net Profit):</span>
-                    <strong id="net-profit" style="color: #27ae60;">Rp 0</strong>
-                </div>
-            </div>
-            <button id="reset-btn" class="btn-danger">Reset Data Hari Ini</button>
-        </footer>
+  <!-- Header Aplikasi -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo-icon">🍲</div>
+      <div>
+        <h1>Kasir Keluarga Endro</h1>
+        <p class="subtitle">Sistem Kasir, HPP & Manajemen Penjualan</p>
+      </div>
     </div>
+    
+    <div class="header-actions">
+      <!-- Tombol Panel Notifikasi -->
+      <button id="btnToggleNotif" class="icon-btn" title="Notifikasi Aktivitas">
+        🔔
+        <span id="notifBadge" class="badge">0</span>
+      </button>
+    </div>
+  </header>
 
-    <script src="app.js"></script>
+  <!-- Navigasi Menu Tab -->
+  <nav class="main-nav">
+    <button class="nav-tab active" data-target="tabKasir">🛒 Kasir (POS)</button>
+    <button class="nav-tab" data-target="tabMenu">📋 Kelola Menu</button>
+    <button class="nav-tab" data-target="tabHpp">📊 Hitung HPP & Laba</button>
+    <button class="nav-tab" data-target="tabLaporan">📜 Riwayat Transaksi</button>
+  </nav>
+
+  <!-- Konten Utama -->
+  <main class="app-container">
+
+    <!-- ================= TAB 1: KASIR ================= -->
+    <section id="tabKasir" class="tab-content active">
+      <div class="pos-layout">
+        <!-- Daftar Produk -->
+        <div class="pos-products">
+          <div class="section-header">
+            <h2>Pilih Menu</h2>
+            <div class="category-filters" id="categoryFilters">
+              <button class="filter-btn active" data-cat="all">Semua</button>
+              <button class="filter-btn" data-cat="Makanan">Makanan</button>
+              <button class="filter-btn" data-cat="Minuman">Minuman</button>
+            </div>
+          </div>
+          <div class="product-grid" id="productGrid">
+            <!-- Render via JS -->
+          </div>
+        </div>
+
+        <!-- Keranjang & Pesanan -->
+        <div class="pos-cart">
+          <div class="cart-card">
+            <div class="cart-header">
+              <h3>🛍️ Pesanan Saat Ini</h3>
+              <button id="btnClearCart" class="btn-text-danger" title="Kosongkan Keranjang">Kosongkan</button>
+            </div>
+
+            <div class="cart-items" id="cartItemsContainer">
+              <p class="empty-cart-msg">Keranjang masih kosong</p>
+            </div>
+
+            <div class="cart-summary">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="cartSubtotal">Rp 0</span>
+              </div>
+              <div class="summary-row total">
+                <span>Total Bayar</span>
+                <span id="cartTotal">Rp 0</span>
+              </div>
+              <button id="btnOpenPayment" class="btn-primary-block" disabled>Lanjut ke Pembayaran</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: KELOLA MENU ================= -->
+    <section id="tabMenu" class="tab-content">
+      <div class="admin-grid">
+        <!-- Form Tambah/Edit Menu -->
+        <div class="card">
+          <h3 id="menuFormTitle">➕ Tambah Menu Baru</h3>
+          <form id="menuForm">
+            <input type="hidden" id="menuId">
+            <div class="form-group">
+              <label for="menuName">Nama Produk / Menu</label>
+              <input type="text" id="menuName" placeholder="Contoh: Dimsum Mentai 3pcs" required>
+            </div>
+            <div class="form-group">
+              <label for="menuCategory">Kategori</label>
+              <select id="menuCategory" required>
+                <option value="Makanan">Makanan</option>
+                <option value="Minuman">Minuman</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="menuPrice">Harga Jual (Rp)</label>
+                <input type="number" id="menuPrice" placeholder="10000" min="0" required>
+              </div>
+              <div class="form-group">
+                <label for="menuHpp">Modal / HPP (Rp)</label>
+                <input type="number" id="menuHpp" placeholder="6000" min="0" required>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" id="btnSaveMenu">Simpan Menu</button>
+              <button type="button" class="btn-secondary" id="btnCancelEdit" style="display:none;">Batal</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tabel Daftar Menu -->
+        <div class="card">
+          <h3>📋 Daftar Semua Menu</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nama Menu</th>
+                  <th>Kategori</th>
+                  <th>Harga Jual</th>
+                  <th>HPP (Modal)</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="menuTableBody">
+                <!-- Render via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: HPP & LABA RUGI ================= -->
+    <section id="tabHpp" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="stat-card stat-blue">
+          <span class="stat-title">Total Omset (Penjualan)</span>
+          <h3 id="statTotalRevenue">Rp 0</h3>
+        </div>
+        <div class="stat-card stat-orange">
+          <span class="stat-title">Total Beban HPP (Modal)</span>
+          <h3 id="statTotalHpp">Rp 0</h3>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-title">Estimasi Keuntungan Bersih</span>
+          <h3 id="statTotalProfit">Rp 0</h3>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1.5rem;">
+        <h3>📊 Analisis Margin Keuntungan per Produk</h3>
+        <p class="text-muted">Perhitungan potensi keuntungan berdasarkan selisih harga jual dan modal HPP produk.</p>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Produk</th>
+                <th>Harga Jual</th>
+                <th>HPP (Modal)</th>
+                <th>Keuntungan/Porsi</th>
+                <th>Margin Profit (%)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hppTableBody">
+              <!-- Render via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: RIWAYAT TRANSAKSI ================= -->
+    <section id="tabLaporan" class="tab-content">
+      <div class="card">
+        <div class="card-header-flex">
+          <h3>📜 Riwayat Transaksi Penjualan</h3>
+          <button id="btnClearHistory" class="btn-danger-outline">Hapus Riwayat Transaksi</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>No. Invoice</th>
+                <th>Waktu</th>
+                <th>Item Terjual</th>
+                <th>Metode</th>
+                <th>Total Belanja</th>
+                <th>Estimasi Laba</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Render via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODAL PEMBAYARAN KASIR ================= -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>💳 Pembayaran Kasir</h3>
+        <button class="btn-close" id="btnClosePaymentModal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="payment-total-box">
+          <span class="lbl">Total yang Harus Dibayar:</span>
+          <h2 id="modalTotalPay">Rp 0</h2>
+        </div>
+
+        <div class="payment-methods">
+          <label class="method-option">
+            <input type="radio" name="payMethod" value="CASH" checked>
+            <span>💵 Tunai (Cash)</span>
+          </label>
+          <label class="method-option">
+            <input type="radio" name="payMethod" value="QRIS">
+            <span>📱 QRIS</span>
+          </label>
+        </div>
+
+        <!-- Bagian Pembayaran Tunai -->
+        <div id="cashPaymentSection" class="payment-section">
+          <div class="form-group">
+            <label for="cashReceived">Nominal Uang Diterima (Rp)</label>
+            <input type="number" id="cashReceived" placeholder="Masukkan jumlah uang..." min="0">
+          </div>
+          
+          <div class="quick-cash-btns" id="quickCashContainer">
+            <!-- Tombol pecahan cepat dibuat otomatis via JS -->
+          </div>
+
+          <div class="change-box">
+            <span>Uang Kembalian:</span>
+            <strong id="cashChange">Rp 0</strong>
+          </div>
+        </div>
+
+        <!-- Bagian Pembayaran QRIS -->
+        <div id="qrisPaymentSection" class="payment-section" style="display:none;">
+          <div class="qris-box">
+            <p>Scan QRIS di bawah ini untuk membayar:</p>
+            <div class="qris-qr-wrapper">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=KASIR-KELUARGA-ENDRO-QRIS" alt="QRIS Code" id="qrisImage">
+            </div>
+            <p class="qris-nominal">Nominal Transfer: <strong id="qrisNominal">Rp 0</strong></p>
+            <small class="text-muted">Pastikan bukti transfer sudah dicek sebelum konfirmasi.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnProcessPayment" class="btn-primary-block">Selesaikan Pembayaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL STRUK / INVOICE ================= -->
+  <div id="receiptModal" class="modal">
+    <div class="modal-content receipt-modal-content">
+      <div class="receipt-print-area" id="receiptPrintArea">
+        <div class="receipt-header">
+          <h3>KASIR KELUARGA ENDRO</h3>
+          <p>Jl. Mawar No. 25, Jawa Timur</p>
+          <p>Telp / WA: 0812-XXXX-XXXX</p>
+          <hr class="receipt-divider">
+        </div>
+        <div class="receipt-info" id="receiptInfo">
+          <!-- Render via JS -->
+        </div>
+        <hr class="receipt-divider">
+        <div class="receipt-items" id="receiptItems">
+          <!-- Render via JS -->
+        </div>
+        <hr class="receipt-divider">
+        <div class="receipt-calc" id="receiptCalc">
+          <!-- Render via JS -->
+        </div>
+        <div class="receipt-footer">
+          <p>Terima Kasih Atas Kunjungan Anda!</p>
+          <p>Semoga Berkah & Selamat Menikmati</p>
+        </div>
+      </div>
+
+      <div class="modal-footer no-print">
+        <button class="btn-primary" onclick="window.print()">🖨️ Cetak Struk</button>
+        <button class="btn-secondary" id="btnCloseReceipt">Selesai / Transaksi Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PANEL DRAWER NOTIFIKASI ================= -->
+  <div id="notifPanel" class="drawer">
+    <div class="drawer-header">
+      <h3>🔔 Log Aktivitas & Notifikasi</h3>
+      <button class="btn-close" id="btnCloseNotif">&times;</button>
+    </div>
+    <div class="drawer-body" id="notifList">
+      <!-- Render via JS -->
+    </div>
+    <div class="drawer-footer">
+      <button id="btnClearNotif" class="btn-danger-outline">Bersihkan Semua Notifikasi</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
