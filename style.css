@@ -37,6 +37,8 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: var(--shadow);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .brand {
@@ -60,6 +62,42 @@ body {
 .brand .subtitle {
   font-size: 0.8rem;
   color: #94a3b8;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cashier-select-box {
+  display: flex;
+  align-items: center;
+  background: #334155;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  gap: 0.5rem;
+}
+
+.cashier-label {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.cashier-dropdown {
+  background: transparent;
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.cashier-dropdown option {
+  background: #1e293b;
+  color: white;
 }
 
 .icon-btn {
@@ -336,6 +374,14 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .admin-grid {
   display: grid;
   grid-template-columns: 360px 1fr;
@@ -400,19 +446,10 @@ body {
   font-weight: 600;
 }
 
-/* Form Styles */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-row {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.form-row .form-group {
-  flex: 1;
-}
+/* Forms */
+.form-group { margin-bottom: 1rem; }
+.form-row { display: flex; gap: 0.75rem; }
+.form-row .form-group { flex: 1; }
 
 label {
   display: block;
@@ -511,6 +548,8 @@ input:focus, select:focus {
   max-width: 480px;
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {
@@ -529,7 +568,6 @@ input:focus, select:focus {
   cursor: pointer;
 }
 
-/* Payment specific */
 .payment-total-box {
   background: #eff6ff;
   border-radius: 8px;
@@ -595,20 +633,90 @@ input:focus, select:focus {
   color: #166534;
 }
 
-.qris-box {
+/* Kartu QRIS Resmi */
+.qris-card-container {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
-  padding: 1rem 0;
 }
 
-.qris-qr-wrapper img {
+.qris-card-header {
+  background: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+.qris-brand-title {
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+.qris-gpn-tag {
+  background: white;
+  color: #dc2626;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.qris-card-body {
+  padding: 1rem;
+}
+
+.merchant-name {
+  font-size: 1.2rem;
+  color: #0f172a;
+  margin-bottom: 0.2rem;
+}
+
+.merchant-nmid {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.merchant-code {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.qris-qr-box {
+  background: white;
+  display: inline-block;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin: 0.5rem 0;
+}
+
+.qris-qr-box img {
   width: 180px;
   height: 180px;
-  margin: 0.75rem 0;
-  border: 4px solid #1e293b;
-  border-radius: 8px;
+  display: block;
 }
 
-/* Receipt Modal & Print */
+.qris-slogan {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #475569;
+  letter-spacing: 0.5px;
+}
+
+.qris-nominal-box {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+/* Struk */
 .receipt-print-area {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.85rem;
@@ -640,12 +748,8 @@ input:focus, select:focus {
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  .receipt-print-area, .receipt-print-area * {
-    visibility: visible;
-  }
+  body * { visibility: hidden; }
+  .receipt-print-area, .receipt-print-area * { visibility: visible; }
   .receipt-print-area {
     position: absolute;
     left: 0;
@@ -653,9 +757,7 @@ input:focus, select:focus {
     width: 80mm;
     margin: 0 auto;
   }
-  .no-print {
-    display: none !important;
-  }
+  .no-print { display: none !important; }
 }
 
 /* Drawer Notification */
@@ -673,9 +775,7 @@ input:focus, select:focus {
   transition: right 0.3s ease;
 }
 
-.drawer.open {
-  right: 0;
-}
+.drawer.open { right: 0; }
 
 .drawer-header {
   padding: 1.25rem;

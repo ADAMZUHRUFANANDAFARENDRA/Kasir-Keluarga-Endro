@@ -1,13 +1,13 @@
-// Registrasi Service Worker untuk Mode Offline & PWA
+// ================= REGISTRASI SERVICE WORKER =================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Aplikasi siap digunakan offline!'))
-      .catch(err => console.error('Registrasi Service Worker gagal:', err));
+      .then(reg => console.log('Service Worker aktif'))
+      .catch(err => console.error('Gagal SW:', err));
   });
 }
 
-// ================= 1. DATA AWAL (DEFAULT PRODUK) =================
+// ================= DATA AWAL =================
 const DEFAULT_PRODUCTS = [
   { id: '1', name: 'Dimsum ori 3pcs', category: 'Makanan', price: 10000, hpp: 6000 },
   { id: '2', name: 'Dimsum mentai 3pcs', category: 'Makanan', price: 14000, hpp: 8500 },
@@ -19,39 +19,34 @@ const DEFAULT_PRODUCTS = [
   { id: '8', name: 'Es teh dengan ukuran jumbo', category: 'Minuman', price: 5000, hpp: 2500 }
 ];
 
-// Inisialisasi State dari LocalStorage
+// State Aplikasi
 let products = JSON.parse(localStorage.getItem('kasir_products')) || DEFAULT_PRODUCTS;
 let cart = [];
 let transactions = JSON.parse(localStorage.getItem('kasir_transactions')) || [];
 let notifications = JSON.parse(localStorage.getItem('kasir_notifications')) || [];
 let currentCategoryFilter = 'all';
+let currentCashier = localStorage.getItem('kasir_active_user') || 'Adam Zuhruf';
 
-// Helper format Rupiah
+// Helper format Rupiah & Tanggal
 const formatRupiah = (num) => 'Rp ' + Number(num || 0).toLocaleString('id-ID');
-
-// Helper Waktu Lokal
 const getFormattedDateTime = () => {
   const d = new Date();
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' +
          d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 };
 
-// Simpan data ke LocalStorage
 function saveState() {
   localStorage.setItem('kasir_products', JSON.stringify(products));
   localStorage.setItem('kasir_transactions', JSON.stringify(transactions));
   localStorage.setItem('kasir_notifications', JSON.stringify(notifications));
+  localStorage.setItem('kasir_active_user', currentCashier);
 }
 
-// ================= 2. SISTEM NOTIFIKASI & LOG =================
+// ================= NOTIFIKASI =================
 function addNotification(message) {
-  const notif = {
-    id: Date.now(),
-    message: message,
-    time: getFormattedDateTime()
-  };
+  const notif = { id: Date.now(), message, time: getFormattedDateTime() };
   notifications.unshift(notif);
-  if (notifications.length > 50) notifications.pop(); // Batasi 50 notif terbaru
+  if (notifications.length > 50) notifications.pop();
   saveState();
   renderNotifications();
   showToast(message);
@@ -84,7 +79,7 @@ function renderNotifications() {
   `).join('');
 }
 
-// ================= 3. RENDER PRODUK & KASIR (POS) =================
+// ================= KASIR (POS) & PRODUK =================
 function renderProducts() {
   const grid = document.getElementById('productGrid');
   const filtered = currentCategoryFilter === 'all' 
@@ -169,7 +164,7 @@ function renderCart() {
   btnCheckout.disabled = false;
 }
 
-// ================= 4. MANAJEMEN MENU & HPP =================
+// ================= KELOLA MENU & HPP =================
 function renderMenuTable() {
   const tbody = document.getElementById('menuTableBody');
   tbody.innerHTML = products.map(p => `
@@ -188,8 +183,6 @@ function renderMenuTable() {
 
 function renderHppAnalysis() {
   const tbody = document.getElementById('hppTableBody');
-  
-  // Hitung Laba/Rugi Analisis per Produk
   tbody.innerHTML = products.map(p => {
     const profit = p.price - p.hpp;
     const margin = p.price > 0 ? ((profit / p.price) * 100).toFixed(1) : 0;
@@ -213,17 +206,14 @@ function renderHppAnalysis() {
     `;
   }).join('');
 
-  // Hitung Ringkasan Dashboard dari Riwayat Transaksi
   let totalRevenue = 0;
   let totalHpp = 0;
-
   transactions.forEach(t => {
     totalRevenue += t.total;
-    totalHpp += t.totalHpp;
+    totalHpp += (t.totalHpp || 0);
   });
 
   const totalProfit = totalRevenue - totalHpp;
-
   document.getElementById('statTotalRevenue').innerText = formatRupiah(totalRevenue);
   document.getElementById('statTotalHpp').innerText = formatRupiah(totalHpp);
   document.getElementById('statTotalProfit').innerText = formatRupiah(totalProfit);
@@ -238,23 +228,14 @@ function handleSaveMenu(e) {
   const hpp = parseInt(document.getElementById('menuHpp').value) || 0;
 
   if (id) {
-    // Mode Update
     const idx = products.findIndex(p => p.id === id);
     if (idx !== -1) {
       products[idx] = { id, name, category, price, hpp };
-      addNotification(`Menu "${name}" berhasil diperbarui.`);
+      addNotification(`[${currentCashier}] memperbarui menu: ${name}`);
     }
   } else {
-    // Mode Tambah Baru
-    const newProduct = {
-      id: Date.now().toString(),
-      name,
-      category,
-      price,
-      hpp
-    };
-    products.push(newProduct);
-    addNotification(`Menu baru "${name}" berhasil ditambahkan.`);
+    products.push({ id: Date.now().toString(), name, category, price, hpp });
+    addNotification(`[${currentCashier}] menambah menu baru: ${name}`);
   }
 
   saveState();
@@ -286,7 +267,7 @@ function deleteMenu(id) {
   if (confirm(`Yakin ingin menghapus menu "${p.name}"?`)) {
     products = products.filter(prod => prod.id !== id);
     saveState();
-    addNotification(`Menu "${p.name}" telah dihapus.`);
+    addNotification(`[${currentCashier}] menghapus menu: ${p.name}`);
     renderProducts();
     renderMenuTable();
     renderHppAnalysis();
@@ -300,7 +281,7 @@ function resetMenuForm() {
   document.getElementById('btnCancelEdit').style.display = 'none';
 }
 
-// ================= 5. SISTEM PEMBAYARAN & STRUK =================
+// ================= PEMBAYARAN & STRUK =================
 function getCartTotal() {
   return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 }
@@ -315,10 +296,10 @@ function openPaymentModal() {
   
   document.getElementById('modalTotalPay').innerText = formatRupiah(total);
   document.getElementById('qrisNominal').innerText = formatRupiah(total);
+  document.getElementById('modalCashierActive').innerText = `Petugas: ${currentCashier}`;
   document.getElementById('cashReceived').value = '';
   document.getElementById('cashChange').innerText = formatRupiah(0);
 
-  // Buat tombol pecahan uang cepat
   const quickBox = document.getElementById('quickCashContainer');
   const suggestions = [total, 10000, 20000, 50000, 100000].filter(v => v >= total);
   const uniqueSuggestions = [...new Set(suggestions)].sort((a, b) => a - b);
@@ -366,10 +347,10 @@ function processPayment() {
     change = received - total;
   }
 
-  // Buat Rekaman Transaksi
   const transaction = {
     invoiceNo: 'INV-' + Date.now().toString().slice(-6),
     dateTime: getFormattedDateTime(),
+    cashier: currentCashier,
     items: [...cart],
     total: total,
     totalHpp: totalHpp,
@@ -382,13 +363,11 @@ function processPayment() {
   transactions.unshift(transaction);
   saveState();
 
-  addNotification(`Transaksi berhasil (${transaction.invoiceNo}) - Total: ${formatRupiah(total)} [${method}]`);
+  addNotification(`Transaksi ${transaction.invoiceNo} (${formatRupiah(total)}) oleh ${currentCashier}`);
 
-  // Tutup Modal Bayar & Buka Struk
   document.getElementById('paymentModal').classList.remove('show');
   showReceipt(transaction);
 
-  // Bersihkan Keranjang
   cart = [];
   renderCart();
   renderHppAnalysis();
@@ -399,6 +378,7 @@ function showReceipt(trx) {
   document.getElementById('receiptInfo').innerHTML = `
     <div class="receipt-row"><span>No. Transaksi</span><span>${trx.invoiceNo}</span></div>
     <div class="receipt-row"><span>Waktu</span><span>${trx.dateTime}</span></div>
+    <div class="receipt-row"><span>Kasir</span><span><b>${trx.cashier}</b></span></div>
     <div class="receipt-row"><span>Metode</span><span>${trx.method}</span></div>
   `;
 
@@ -418,11 +398,11 @@ function showReceipt(trx) {
   document.getElementById('receiptModal').classList.add('show');
 }
 
-// ================= 6. RIWAYAT TRANSAKSI =================
+// ================= RIWAYAT TRANSAKSI =================
 function renderHistoryTable() {
   const tbody = document.getElementById('historyTableBody');
   if (transactions.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada riwayat transaksi.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">Belum ada riwayat transaksi.</td></tr>';
     return;
   }
 
@@ -432,6 +412,7 @@ function renderHistoryTable() {
       <tr>
         <td><b>${t.invoiceNo}</b></td>
         <td>${t.dateTime}</td>
+        <td><b>${t.cashier || '-'}</b></td>
         <td>${itemSummary}</td>
         <td><span class="product-tag">${t.method}</span></td>
         <td><b>${formatRupiah(t.total)}</b></td>
@@ -441,9 +422,17 @@ function renderHistoryTable() {
   }).join('');
 }
 
-// ================= 7. EVENT LISTENERS =================
+// ================= EVENT LISTENERS =================
 document.addEventListener('DOMContentLoaded', () => {
-  // Render Data Awal
+  // Set Kasir Aktif
+  const cashierDropdown = document.getElementById('selectCashier');
+  cashierDropdown.value = currentCashier;
+  cashierDropdown.addEventListener('change', (e) => {
+    currentCashier = e.target.value;
+    saveState();
+    addNotification(`Petugas kasir diubah menjadi: ${currentCashier}`);
+  });
+
   renderProducts();
   renderCart();
   renderMenuTable();
@@ -456,16 +445,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
       tab.classList.add('active');
       document.getElementById(tab.dataset.target).classList.add('active');
-
       if (tab.dataset.target === 'tabHpp') renderHppAnalysis();
       if (tab.dataset.target === 'tabLaporan') renderHistoryTable();
     });
   });
 
-  // Filter Kategori Kasir
+  // Filter Kategori
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -492,7 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('paymentModal').classList.remove('show');
   });
 
-  // Switch Metode Pembayaran
   document.querySelectorAll('input[name="payMethod"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
       if (e.target.value === 'CASH') {
@@ -521,7 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderNotifications();
   });
 
-  // Hapus Riwayat Transaksi
   document.getElementById('btnClearHistory').addEventListener('click', () => {
     if (confirm('Hapus seluruh riwayat transaksi?')) {
       transactions = [];

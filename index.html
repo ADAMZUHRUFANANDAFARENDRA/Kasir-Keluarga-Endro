@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1e293b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
   <!-- Header Aplikasi -->
@@ -20,6 +22,18 @@
     </div>
     
     <div class="header-actions">
+      <!-- Pilihan Kasir yang Bertugas -->
+      <div class="cashier-select-box">
+        <span class="cashier-label">👤 Kasir:</span>
+        <select id="selectCashier" class="cashier-dropdown">
+          <option value="Adam Zuhruf">Adam Zuhruf</option>
+          <option value="Fajarwati Rochmah">Fajarwati Rochmah</option>
+          <option value="Endro Trimaryono">Endro Trimaryono</option>
+          <option value="Muhammad Ihsan Farendra">Muhammad Ihsan Farendra</option>
+          <option value="Mbah Sukarti">Mbah Sukarti</option>
+        </select>
+      </div>
+
       <!-- Tombol Panel Notifikasi -->
       <button id="btnToggleNotif" class="icon-btn" title="Notifikasi Aktivitas">
         🔔
@@ -88,7 +102,6 @@
     <!-- ================= TAB 2: KELOLA MENU ================= -->
     <section id="tabMenu" class="tab-content">
       <div class="admin-grid">
-        <!-- Form Tambah/Edit Menu -->
         <div class="card">
           <h3 id="menuFormTitle">➕ Tambah Menu Baru</h3>
           <form id="menuForm">
@@ -122,7 +135,6 @@
           </form>
         </div>
 
-        <!-- Tabel Daftar Menu -->
         <div class="card">
           <h3>📋 Daftar Semua Menu</h3>
           <div class="table-responsive">
@@ -198,6 +210,7 @@
               <tr>
                 <th>No. Invoice</th>
                 <th>Waktu</th>
+                <th>Kasir</th>
                 <th>Item Terjual</th>
                 <th>Metode</th>
                 <th>Total Belanja</th>
@@ -225,6 +238,7 @@
         <div class="payment-total-box">
           <span class="lbl">Total yang Harus Dibayar:</span>
           <h2 id="modalTotalPay">Rp 0</h2>
+          <small id="modalCashierActive" style="color:#64748b; font-weight:600;"></small>
         </div>
 
         <div class="payment-methods">
@@ -255,26 +269,41 @@
           </div>
         </div>
 
-        <!-- Bagian Pembayaran QRIS -->
+        <!-- Bagian Pembayaran QRIS (Poster Resmi Dapur efia) -->
         <div id="qrisPaymentSection" class="payment-section" style="display:none;">
-          <div class="qris-box">
-            <div class="qris-card-wrapper" style="text-align: center;">
-              <!-- Menampilkan Gambar QRIS Dapur efia -->
-              <img src="qris.jpg" alt="QRIS Dapur efia" id="qrisImage" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+          <div class="qris-card-container">
+            <div class="qris-card-header">
+              <span class="qris-brand-title">QRIS</span>
+              <span class="qris-gpn-tag">GPN</span>
             </div>
             
-            <p class="qris-nominal" style="margin-top: 0.85rem; font-size: 1.15rem;">
-              Nominal Transfer: <strong id="qrisNominal" style="color: var(--primary);">Rp 0</strong>
-            </p>
-            <p style="font-size: 0.85rem; color: #475569; margin-top: 0.25rem;">
-              Merchant: <b>Dapur efia</b> <br>
-              <small>NMID: ID1026575543073</small>
-            </p>
-            <small class="text-muted" style="display: block; margin-top: 0.5rem;">
-              ⚠️ Pastikan pelanggan telah scan dan menunjukkan bukti transfer sebelum menyelesaikan transaksi.
-            </small>
+            <div class="qris-card-body">
+              <h4 class="merchant-name">Dapur efia</h4>
+              <p class="merchant-nmid">NMID : ID1026575543073</p>
+              <p class="merchant-code">A01</p>
+
+              <div class="qris-qr-box">
+                <!-- QR Image dengan multi-fallback -->
+                <img id="qrisImage" 
+                     src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020101021126570011ID.GO.GOPAY.WWW01189360091510265755430730215ID10265755430730303A015204581253033605802ID5910Dapur+efia6009SURABAYA61056023462070703A016304" 
+                     alt="QR Code QRIS Dapur efia">
+              </div>
+
+              <p class="qris-slogan">SATU QRIS UNTUK SEMUA</p>
+              <p class="qris-nominal-box">Nominal: <b id="qrisNominal">Rp 0</b></p>
+            </div>
           </div>
+          <small class="text-muted" style="display:block; text-align:center; margin-top:0.6rem;">
+            ⚠️ Pastikan pembeli telah selesai scan & konfirmasi bukti transfer sebelum menekan selesai.
+          </small>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnProcessPayment" class="btn-primary-block">Selesaikan Pembayaran</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= MODAL STRUK / INVOICE ================= -->
   <div id="receiptModal" class="modal">
@@ -282,8 +311,8 @@
       <div class="receipt-print-area" id="receiptPrintArea">
         <div class="receipt-header">
           <h3>KASIR KELUARGA ENDRO</h3>
-          <p>Jl. Mawar No. 25, Jawa Timur</p>
-          <p>Telp / WA: 0812-XXXX-XXXX</p>
+          <p>Dapur efia</p>
+          <p>Jawa Timur, Indonesia</p>
           <hr class="receipt-divider">
         </div>
         <div class="receipt-info" id="receiptInfo">
