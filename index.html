@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasir Keluarga Endro</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Kasir Keluarga Endro</h1>
+            <div class="operator-select">
+                <label for="kasir">Kasir on Duty:</label>
+                <select id="kasir">
+                    <option value="Endro Trimaryono">Endro Trimaryono</option>
+                    <option value="Fajarwati Rochmah">Fajarwati Rochmah</option>
+                    <option value="Adam Zuhruf Ananda Farendra">Adam Zuhruf Ananda Farendra</option>
+                    <option value="Muhammad Ihsan Farendra">Muhammad Ihsan Farendra</option>
+                    <option value="Mbah Sukarti">Mbah Sukarti</option>
+                </select>
+            </div>
+        </header>
+
+        <main>
+            <div id="product-list" class="grid-container">
+                <!-- Daftar produk akan dirender lewat JavaScript -->
+            </div>
+        </main>
+
+        <footer>
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Total Omset (Kotor):</span>
+                    <strong id="total-sales">Rp 0</strong>
+                </div>
+                <div class="summary-item">
+                    <span>Total HPP (Modal Terpakai):</span>
+                    <strong id="total-hpp" style="color: #e67e22;">Rp 0</strong>
+                </div>
+                <div class="summary-item highlight">
+                    <span>Keuntungan Bersih (Net Profit):</span>
+                    <strong id="net-profit" style="color: #27ae60;">Rp 0</strong>
+                </div>
+            </div>
+            <button id="reset-btn" class="btn-danger">Reset Data Hari Ini</button>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
