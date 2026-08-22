@@ -258,21 +258,23 @@
         <!-- Bagian Pembayaran QRIS -->
         <div id="qrisPaymentSection" class="payment-section" style="display:none;">
           <div class="qris-box">
-            <p>Scan QRIS di bawah ini untuk membayar:</p>
-            <div class="qris-qr-wrapper">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=KASIR-KELUARGA-ENDRO-QRIS" alt="QRIS Code" id="qrisImage">
+            <div class="qris-card-wrapper" style="text-align: center;">
+              <!-- Menampilkan Gambar QRIS Dapur efia -->
+              <img src="qris.jpg" alt="QRIS Dapur efia" id="qrisImage" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
             </div>
-            <p class="qris-nominal">Nominal Transfer: <strong id="qrisNominal">Rp 0</strong></p>
-            <small class="text-muted">Pastikan bukti transfer sudah dicek sebelum konfirmasi.</small>
+            
+            <p class="qris-nominal" style="margin-top: 0.85rem; font-size: 1.15rem;">
+              Nominal Transfer: <strong id="qrisNominal" style="color: var(--primary);">Rp 0</strong>
+            </p>
+            <p style="font-size: 0.85rem; color: #475569; margin-top: 0.25rem;">
+              Merchant: <b>Dapur efia</b> <br>
+              <small>NMID: ID1026575543073</small>
+            </p>
+            <small class="text-muted" style="display: block; margin-top: 0.5rem;">
+              ⚠️ Pastikan pelanggan telah scan dan menunjukkan bukti transfer sebelum menyelesaikan transaksi.
+            </small>
           </div>
         </div>
-      </div>
-
-      <div class="modal-footer">
-        <button id="btnProcessPayment" class="btn-primary-block">Selesaikan Pembayaran</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ================= MODAL STRUK / INVOICE ================= -->
   <div id="receiptModal" class="modal">

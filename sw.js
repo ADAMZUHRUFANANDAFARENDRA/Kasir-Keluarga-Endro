@@ -1,10 +1,11 @@
-const CACHE_NAME = "kasir-keluarga-v2";
+const CACHE_NAME = "kasir-keluarga-v3";
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
-  "./manifest.json"
+  "./manifest.json",
+  "./qris.jpg"
 ];
 
 // Install Event
